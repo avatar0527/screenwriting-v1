@@ -1,0 +1,63 @@
+.scene {
+  text-transform: uppercase;
+  background-color: grey;
+  font-size: 16px;
+  font-weight: normal;
+}
+.action {
+  font-size: 16px;
+  font-weight: normal;
+}
+.character {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0;
+}
+.dialogue {
+  font-size: 16px;
+  text-align: justify;
+  margin-left: 30%;
+  margin-right: 30%;
+  margin-top: 0;
+  font-weight: normal;
+}
+.transition {
+  font-size: 16px;
+  text-align: right;
+  font-weight: normal;
+}
+.toolbar input[type='button'] {
+  border: 1px solid #eee;
+  background-color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 2px;
+  margin-bottom: 2px;
+}
+
+.toolbar input[type='button']:active {
+  transform: scale(0.95);
+}
+
+.toolbar input[type='button']:not(.active):hover {
+  background-color: #eee;
+}
+
+.toolbar input[type='button'].active {
+  background-color: turquoise;
+  border-color: transparent;
+}
+div.DraftEditor-root {
+  border: 1px solid #000;
+  background-color: rgb(255, 255, 245);
+  height: 297mm;
+  width: 210mm;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 1in;
+}
+div.DraftEditor-editorContainer,
+div.public-DraftEditor-content {
+  height: 100%;
+}
