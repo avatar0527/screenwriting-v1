@@ -3,7 +3,7 @@ import {
   EditorState,
   RichUtils,
   getDefaultKeyBinding,
-  KeyBindingUtil,
+  // KeyBindingUtil,
 } from 'draft-js';
 import '../css/App.css';
 import React from 'react';
