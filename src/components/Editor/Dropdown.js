@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { connect } from 'react-redux';
 
-const Dropdown = ({
-  options,
-  selected,
-  onSelectedChange,
-  label,
-  toggleInlineStyle,
-}) => {
+const Dropdown = ({ options, index, onSelectedChange, label }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef();
 
@@ -24,29 +19,34 @@ const Dropdown = ({
       document.body.removeEventListener('click', onBodyClick);
     };
   }, []);
+
+  // iterate through options
+  // if current = selected do nothing
+  // render options
+  // on click call toggle
   const renderedOptions = options.map((option) => {
-    if (option.value === options[selected].value) {
+    if (option.value === options[index].value) {
       return null;
     }
 
     return (
       <div
-        key={option.value}
+        key={option.buttonText}
         className='item'
         onClick={() => onSelectedChange(options.indexOf(option))}
+        data-block={option.value}
       >
-        {option.value}
+        {option.buttonText}
       </div>
     );
   });
 
-  const onClick = () => {
+  const onClick = (e) => {
     setOpen(!open);
-    toggleInlineStyle();
   };
 
   return (
-    <div ref={ref} className='ui form'>
+    <div ref={ref} className='ui form small'>
       <div className='field'>
         <label className='label'>{label}</label>
         <div
@@ -54,7 +54,7 @@ const Dropdown = ({
           className={`ui selection dropdown ${open ? 'visible active' : ''}`}
         >
           <i className='dropdown icon'></i>
-          <div className='text'>{options[selected].value}</div>
+          <div className='text'>{options[index].buttonText}</div>
           <div className={`menu ${open ? 'visible transition' : ''}`}>
             {renderedOptions}
           </div>
@@ -64,4 +64,10 @@ const Dropdown = ({
   );
 };
 
-export default Dropdown;
+const mapStateToProps = (state) => {
+  return {
+    index: state.optionIndex,
+  };
+};
+
+export default connect(mapStateToProps)(Dropdown);
