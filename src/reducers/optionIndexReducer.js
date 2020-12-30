@@ -1,4 +1,4 @@
-export default (index = 0, action) => {
+const optionIndexReducer = (index = 0, action) => {
   switch (action.type) {
     case 'UPDATE_OPTION_INDEX':
       return action.payload;
@@ -6,3 +6,5 @@ export default (index = 0, action) => {
       return index;
   }
 };
+
+export default optionIndexReducer;
