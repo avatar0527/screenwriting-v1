@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 
-const Dropdown = ({ options, index, onSelectedChange, label }) => {
+const EditorDropdown = ({ options, index, onSelectedChange, label }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef();
 
@@ -70,4 +70,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Dropdown);
+export default connect(mapStateToProps)(EditorDropdown);

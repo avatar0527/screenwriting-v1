@@ -1,0 +1,48 @@
+01/01 Goals
+- Enter Functions
+General
+Scene 
+- after typing scene, press enter to go down a line AND change to action 
+- If scene and empty, change to action 
+
+Character 
+- if empty press enter to go back to action 
+- if not, go down a line and change to dialogue
+
+dialogue
+- if empty ??
+- if not empty, go down a line and change to character 
+
+
+
+- Backspace Functions 
+when backspacing, index should change to index of block type it is currently on. 
+
+if (empty)
+    if (action) {
+        updateIndex to line above
+        do normal thing 
+    }
+    if(!action) {
+
+    }
+
+
+
+
+
+
+
+- use redux to manage optionIndex, editorState, editorContent(for JSON database)
+
+- can't backspace when i actually want to
+It's good that it isn't deleting the heading, but backspace should send me to previous line 
+
+- currently the blocktype that is rendered is not dependent on optionINdex, it simply references it when blocktyp is requested  to be changed. instead, the block type should be dependent on optionIndex. this would make a lot of the logic a whole lot more simple 
+
+git add . 
+git commit -m "" 
+git push origin master
+
+
+

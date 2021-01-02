@@ -4,3 +4,10 @@ export const updateOptionIndex = (index) => {
     payload: index,
   };
 };
+
+export const updateBackspaceCount = (count) => {
+  return {
+    type: 'UPDATE_BACKSPACE_COUNT',
+    payload: count,
+  };
+};

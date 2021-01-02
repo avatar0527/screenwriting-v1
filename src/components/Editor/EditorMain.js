@@ -1,14 +1,25 @@
-import { Editor, EditorState, RichUtils, getDefaultKeyBinding } from 'draft-js';
-import { getSelectedBlock } from 'draftjs-utils';
+import {
+  Editor,
+  EditorState,
+  RichUtils,
+  getDefaultKeyBinding,
+  Modifier,
+} from 'draft-js';
+import {
+  getSelectedBlock,
+  getSelectedBlocksType,
+  insertNewUnstyledBlock,
+} from 'draftjs-utils';
 import '../../css/EditorStyle.css';
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateOptionIndex } from '../../actions';
+import { updateBackspaceCount, updateOptionIndex } from '../../actions';
 
 import CreateSimpleButtons from './CreateSimpleButtons';
-import Toolbar from './Toolbar';
+import EditorToolbar from './EditorToolbar';
 import BlockButtons from './BlockButtons';
-import Dropdown from './Dropdown';
+import EditorDropdown from './EditorDropdown';
+import EditorHeader from './EditorHeader';
 
 const blockTypes = [
   {
@@ -17,7 +28,7 @@ const blockTypes = [
   },
 
   {
-    value: 'header-two',
+    value: 'unstyled',
     buttonText: '액션',
   },
 
@@ -56,6 +67,7 @@ const fontWeightButtons = [
 class EditorMain extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = { editorState: EditorState.createEmpty() };
     this.state = {
       editorState: RichUtils.toggleBlockType(
@@ -64,13 +76,37 @@ class EditorMain extends React.Component {
       ),
     };
 
-    this.focus = () => this.editor.focus();
     this.onChange = this.onChange.bind(this);
+    this.handleReturn = this.handleReturn.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
     this.toggleBlockType = this.toggleBlockType.bind(this);
+    this.clear = this.clear.bind(this);
+    this.setDomEditorRef = (ref) => (this.domEditor = ref);
+    this.focus = () => this.domEditor.focus();
+  }
+  componentDidUpdate() {
+    // console.log(`componentDidUpdate ${this.props.index}`);
+    // const block = getSelectedBlocksType(this.state.editorState);
+    // const index = blockTypes.findIndex((i) => i.value === block);
+    // if (block) {
+    //   this.props.updateOptionIndex(index);
+    // }
   }
 
   onChange(editorState) {
+    console.log('change detected');
+    console.log(`componentDidUpdate ${this.props.index}`);
+    const currentBlock = getSelectedBlocksType(this.state.editorState);
+    const newBlock = getSelectedBlocksType(editorState);
+    // const index = blockTypes.findIndex((i) => i.value === block);
+    if (currentBlock !== newBlock) {
+      console.log('called!');
+      // console.log(this.props.index);
+      // editorState = RichUtils.toggleBlockType(
+      //   editorState,
+      //   blockTypes[index].value
+      // );
+    }
     this.setState({ editorState });
   }
 
@@ -83,12 +119,6 @@ class EditorMain extends React.Component {
     if (e.keyCode === 9) {
       return 'upOneLevel';
     }
-    // if (e.keyCode === 13 && optionIndex === 0) {
-    //   return 'upOneLevel';
-    // }
-    // if (e.keyCode === 13 && optionIndex === 2) {
-    //   return 'downOneLevel';
-    // }
 
     return getDefaultKeyBinding(e);
   }
@@ -98,7 +128,7 @@ class EditorMain extends React.Component {
     if (type === 'header-one') {
       return 'scene';
     }
-    if (type === 'header-two') {
+    if (type === 'unstyled') {
       return 'action';
     }
     if (type === 'header-three') {
@@ -109,6 +139,86 @@ class EditorMain extends React.Component {
     }
     if (type === 'header-five') {
       return 'transition';
+    }
+  }
+
+  clear() {
+    const { editorState } = this.state;
+    const selection = editorState.getSelection();
+    const contentState = editorState.getCurrentContent();
+    const styles = editorState.getCurrentInlineStyle();
+
+    const removeStyles = styles.reduce((state, style) => {
+      return Modifier.removeInlineStyle(state, selection, style);
+    }, contentState);
+
+    const removeBlock = Modifier.setBlockType(
+      removeStyles,
+      selection,
+      'unstyled'
+    );
+
+    this.setState({
+      editorState: EditorState.push(editorState, removeBlock),
+    });
+  }
+
+  handleReturn(event, editorState) {
+    const block = getSelectedBlock(this.state.editorState);
+    if (block.getText() === '') {
+      let i;
+      switch (this.props.index) {
+        case 0:
+          i = 1;
+          break;
+        case 1:
+          i = 0;
+          break;
+        default:
+          break;
+      }
+
+      this.setState({
+        editorState: RichUtils.toggleBlockType(
+          editorState,
+          blockTypes[i].value
+        ),
+      });
+
+      this.props.updateOptionIndex(i);
+      return 'handled';
+    } else {
+      let i;
+      console.log(this.props.index);
+      switch (this.props.index) {
+        case 0:
+          i = 1;
+          break;
+        case 1:
+          i = 1;
+          break;
+        case 2:
+          i = 3;
+          break;
+        case 3:
+          i = 2;
+          break;
+        default:
+          break;
+      }
+
+      insertNewUnstyledBlock(this.state.editorState);
+
+      console.log('i is ' + i);
+      this.props.updateOptionIndex(i);
+
+      this.setState({
+        editorState: RichUtils.toggleBlockType(
+          editorState,
+          blockTypes[i].value
+        ),
+      });
+      return 'handled';
     }
   }
 
@@ -142,6 +252,17 @@ class EditorMain extends React.Component {
     if (command === 'backspace') {
       const block = getSelectedBlock(this.state.editorState);
       if (block.getText() === '') {
+        this.clear();
+
+        if (this.props.index === 1) {
+          return 'not-handled';
+        }
+        this.props.updateOptionIndex(1);
+
+        editorState = RichUtils.toggleBlockType(
+          this.state.editorState,
+          blockTypes[this.props.index].value
+        );
         return 'handled';
       }
     }
@@ -164,10 +285,11 @@ class EditorMain extends React.Component {
   }
 
   blockTypeOnSelectedChange = (index) => {
+    this.props.updateOptionIndex(index);
     this.setState({
       editorState: RichUtils.toggleBlockType(
         this.state.editorState,
-        blockTypes[this.props.index].value
+        blockTypes[index].value
       ),
     });
   };
@@ -186,10 +308,10 @@ class EditorMain extends React.Component {
   render() {
     return (
       <div className='ui container' style={{ marginTop: '3em' }}>
-        <h2 className='ui dividing header'>Screen Writing v1</h2>
-        <Toolbar
+        <EditorHeader />
+        <EditorToolbar
           blockDropdown={
-            <Dropdown
+            <EditorDropdown
               options={blockTypes}
               selected={this.props.index}
               onSelectedChange={this.blockTypeOnSelectedChange}
@@ -231,8 +353,10 @@ class EditorMain extends React.Component {
             editorState={this.state.editorState}
             onChange={this.onChange}
             handleKeyCommand={this.handleKeyCommand}
+            handleReturn={this.handleReturn}
             keyBindingFn={this.keyBindingFunction}
             blockStyleFn={this.myBlockStyleFn}
+            ref={this.setDomEditorRef}
           />
         </div>
       </div>
@@ -241,7 +365,10 @@ class EditorMain extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  return { index: state.optionIndex };
+  return { index: state.optionIndex, backspaceCount: state.backspaceCount };
 };
 
-export default connect(mapStateToProps, { updateOptionIndex })(EditorMain);
+export default connect(mapStateToProps, {
+  updateOptionIndex,
+  updateBackspaceCount,
+})(EditorMain);
