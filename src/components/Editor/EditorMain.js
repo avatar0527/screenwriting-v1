@@ -22,6 +22,7 @@ import EditorToolbar from './EditorToolbar';
 import BlockButtons from './BlockButtons';
 import EditorDropdown from './EditorDropdown';
 import EditorHeader from './EditorHeader';
+import EditorInstructions from './EditorInstructions';
 
 const blockTypes = [
   {
@@ -36,7 +37,7 @@ const blockTypes = [
 
   {
     value: 'header-three',
-    buttonText: '케릭터',
+    buttonText: '캐릭터',
   },
   {
     value: 'header-four',
@@ -298,56 +299,63 @@ class EditorMain extends React.Component {
   render() {
     return (
       <div className='ui container' style={{ marginTop: '3em' }}>
-        <EditorHeader />
-        <EditorToolbar
-          blockDropdown={
-            <EditorDropdown
-              options={blockTypes}
-              selected={this.props.index}
-              onSelectedChange={this.blockTypeOnSelectedChange}
-              label=''
-            />
-          }
-          fontButtons={
-            <CreateSimpleButtons
-              buttonDetails={fontWeightButtons}
-              buttonFunction={this.toggleFontWeight}
-              editorState={this.props.editorState}
-            />
-          }
-          sceneNumberButton={
-            <CreateSimpleButtons
-              buttonDetails={[
-                {
-                  value: 'placeholder',
-                  buttonIcon: 'list ol icon',
-                  buttonText: '',
-                },
-              ]}
-              buttonFunction={() => {
-                return null;
-              }}
-              editorState={this.props.editorState}
-            />
-          }
-          blockButtons={
-            <BlockButtons
-              editorState={this.props.editorState}
-              toggleBlockType={this.toggleBlockType}
-              blockTypes={blockTypes}
-            />
-          }
-        />
-        <div onClick={this.focus}>
-          <Editor
-            editorState={this.props.editorState}
-            onChange={this.onChange}
-            handleKeyCommand={this.handleKeyCommand}
-            handleReturn={this.handleReturn}
-            keyBindingFn={this.keyBindingFunction}
-            blockStyleFn={this.myBlockStyleFn}
-            ref={this.setDomEditorRef}
+        <div>
+          <EditorHeader />
+          <EditorToolbar
+            blockDropdown={
+              <EditorDropdown
+                options={blockTypes}
+                selected={this.props.index}
+                onSelectedChange={this.blockTypeOnSelectedChange}
+                label=''
+              />
+            }
+            fontButtons={
+              <CreateSimpleButtons
+                buttonDetails={fontWeightButtons}
+                buttonFunction={this.toggleFontWeight}
+                editorState={this.props.editorState}
+              />
+            }
+            sceneNumberButton={
+              <CreateSimpleButtons
+                buttonDetails={[
+                  {
+                    value: 'placeholder',
+                    buttonIcon: 'list ol icon',
+                    buttonText: '',
+                  },
+                ]}
+                buttonFunction={() => {
+                  return null;
+                }}
+                editorState={this.props.editorState}
+              />
+            }
+            blockButtons={
+              <BlockButtons
+                editorState={this.props.editorState}
+                toggleBlockType={this.toggleBlockType}
+                blockTypes={blockTypes}
+              />
+            }
           />
+        </div>
+        <div className='ui compact segment'>
+          <div onClick={this.focus}>
+            <Editor
+              editorState={this.props.editorState}
+              onChange={this.onChange}
+              handleKeyCommand={this.handleKeyCommand}
+              handleReturn={this.handleReturn}
+              keyBindingFn={this.keyBindingFunction}
+              blockStyleFn={this.myBlockStyleFn}
+              ref={this.setDomEditorRef}
+            />
+          </div>
+          <div className='ui right rail' style={{ marginLeft: '0px' }}>
+            <EditorInstructions />
+          </div>
         </div>
       </div>
     );
