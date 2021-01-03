@@ -13,8 +13,6 @@ import {
   updateBackspaceCount,
   updateOptionIndex,
   updateEditorState,
-  changeBlockType,
-  updateDebugIndex,
 } from '../../actions';
 
 import CreateSimpleButtons from './CreateSimpleButtons';
@@ -70,6 +68,14 @@ class EditorMain extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = { editorState: EditorState.createEmpty() };
+    this.state = {
+      editorState: RichUtils.toggleBlockType(
+        this.state.editorState,
+        blockTypes[this.props.index].value
+      ),
+    };
+
     this.onChange = this.onChange.bind(this);
     this.handleReturn = this.handleReturn.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
@@ -79,41 +85,22 @@ class EditorMain extends React.Component {
     this.focus = () => this.domEditor.focus();
   }
 
-  componentDidMount() {
-    this.props.updateEditorState(
-      RichUtils.toggleBlockType(
-        this.props.editorState,
-        blockTypes[this.props.index].value
-      )
-    );
-  }
-
-  //Debug Indexes
-  // 1 = return, 2 = backspace
   onChange(editorState) {
-    this.props.updateEditorState(editorState);
-
-    switch (this.props.debugIndex) {
-      case 1:
-        break;
-      case 2:
-        break;
-      default:
-        break;
-    }
-    this.props.updateDebugIndex(0);
+    this.setState({ editorState });
   }
 
   keyBindingFunction(e) {
     //will need something to say cursor on most left end for tab stuff
     // need logic for +enter
     if (e.keyCode === 9 && e.shiftKey) {
-      e.preventDefault();
       return 'downOneLevel';
     }
     if (e.keyCode === 9) {
-      e.preventDefault();
       return 'upOneLevel';
+    }
+
+    if (e.keyCode === 220) {
+      return 'testingR';
     }
 
     return getDefaultKeyBinding(e);
@@ -139,7 +126,7 @@ class EditorMain extends React.Component {
   }
 
   clear() {
-    const editorState = this.props.editorState;
+    const { editorState } = this.state;
     const selection = editorState.getSelection();
     const contentState = editorState.getCurrentContent();
     const styles = editorState.getCurrentInlineStyle();
@@ -154,29 +141,35 @@ class EditorMain extends React.Component {
       'unstyled'
     );
 
-    this.props.updateEditorState(EditorState.push(editorState, removeBlock));
+    this.setState({
+      editorState: EditorState.push(editorState, removeBlock),
+    });
   }
 
   handleReturn(event, editorState) {
-    const block = getSelectedBlock(this.props.editorState);
-    const currentContent = editorState.getCurrentContent();
-    const selection = editorState.getSelection();
-    const textWithEntity = Modifier.splitBlock(currentContent, selection);
-
+    const block = getSelectedBlock(this.state.editorState);
     if (block.getText() === '') {
       let i = 1;
       switch (this.props.index) {
         case 0:
           i = 1;
-          this.props.updateOptionIndex(i);
-          this.props.changeBlockType(editorState, blockTypes[i].value);
-
-          return 'handled';
+          break;
+        case 1:
+          i = 0;
+          break;
         default:
-          return 'not-handled';
+          break;
       }
 
-      // this.props.updateOptionIndex(i);
+      this.setState({
+        editorState: RichUtils.toggleBlockType(
+          editorState,
+          blockTypes[i].value
+        ),
+      });
+
+      this.props.updateOptionIndex(i);
+      return 'handled';
     } else {
       let i;
       switch (this.props.index) {
@@ -196,17 +189,19 @@ class EditorMain extends React.Component {
           break;
       }
 
-      const newEditorState = RichUtils.toggleBlockType(
-        editorState,
-        blockTypes[this.props.index].value
-      );
+      const currentContent = editorState.getCurrentContent();
+      const selection = editorState.getSelection();
+      const textWithEntity = Modifier.splitBlock(currentContent, selection);
 
-      this.props.updateEditorState(
-        EditorState.push(newEditorState, textWithEntity, 'split-block')
-      );
+      this.setState({
+        editorState: EditorState.push(
+          editorState,
+          textWithEntity,
+          'split-block'
+        ),
+      });
 
       this.props.updateOptionIndex(i);
-      this.props.updateDebugIndex(1);
 
       return 'handled';
     }
@@ -215,7 +210,7 @@ class EditorMain extends React.Component {
   handleKeyCommand(command) {
     // inline formatting key commands handles bold, italic, code, underline
     var editorState = RichUtils.handleKeyCommand(
-      this.props.editorState,
+      this.state.editorState,
       command
     );
 
@@ -223,7 +218,7 @@ class EditorMain extends React.Component {
       let i = this.props.index;
       this.props.index === blockTypes.length - 1 ? (i = 0) : i++;
       editorState = RichUtils.toggleBlockType(
-        this.props.editorState,
+        this.state.editorState,
         blockTypes[i].value
       );
       this.props.updateOptionIndex(i);
@@ -233,35 +228,32 @@ class EditorMain extends React.Component {
       let i = this.props.index;
       this.props.index === 0 ? (i = blockTypes.length - 1) : i--;
       editorState = RichUtils.toggleBlockType(
-        this.props.editorState,
+        this.state.editorState,
         blockTypes[i].value
       );
       this.props.updateOptionIndex(i);
     }
 
     if (command === 'backspace') {
-      const block = getSelectedBlock(this.props.editorState);
+      const block = getSelectedBlock(this.state.editorState);
       if (block.getText() === '') {
         this.clear();
 
         if (this.props.index === 1) {
           return 'not-handled';
         }
-
         this.props.updateOptionIndex(1);
 
         editorState = RichUtils.toggleBlockType(
-          this.props.editorState,
+          this.state.editorState,
           blockTypes[this.props.index].value
         );
-        this.props.updateDebugIndex(2);
         return 'handled';
-      } else {
       }
     }
 
     if (editorState) {
-      this.props.updateEditorState(editorState);
+      this.setState({ editorState });
       return 'handled';
     }
 
@@ -272,16 +264,19 @@ class EditorMain extends React.Component {
     e.preventDefault();
 
     let block = e.currentTarget.getAttribute('data-block');
-    this.props.updateEditorState(
-      RichUtils.toggleBlockType(this.props.editorState, block)
-    );
+    this.setState({
+      editorState: RichUtils.toggleBlockType(this.state.editorState, block),
+    });
   }
 
   blockTypeOnSelectedChange = (index) => {
     this.props.updateOptionIndex(index);
-    this.props.updateEditorState(
-      RichUtils.toggleBlockType(this.props.editorState, blockTypes[index].value)
-    );
+    this.setState({
+      editorState: RichUtils.toggleBlockType(
+        this.state.editorState,
+        blockTypes[index].value
+      ),
+    });
   };
 
   toggleFontWeight = (e) => {
@@ -291,7 +286,7 @@ class EditorMain extends React.Component {
 
     const value = e.currentTarget.getAttribute('data-style');
     this.setState({
-      editorState: RichUtils.toggleInlineStyle(this.props.editorState, value),
+      editorState: RichUtils.toggleInlineStyle(this.state.editorState, value),
     });
   };
 
@@ -312,7 +307,7 @@ class EditorMain extends React.Component {
             <CreateSimpleButtons
               buttonDetails={fontWeightButtons}
               buttonFunction={this.toggleFontWeight}
-              editorState={this.props.editorState}
+              editorState={this.state.editorState}
             />
           }
           sceneNumberButton={
@@ -327,12 +322,12 @@ class EditorMain extends React.Component {
               buttonFunction={() => {
                 return null;
               }}
-              editorState={this.props.editorState}
+              editorState={this.state.editorState}
             />
           }
           blockButtons={
             <BlockButtons
-              editorState={this.props.editorState}
+              editorState={this.state.editorState}
               toggleBlockType={this.toggleBlockType}
               blockTypes={blockTypes}
             />
@@ -340,7 +335,7 @@ class EditorMain extends React.Component {
         />
         <div onClick={this.focus}>
           <Editor
-            editorState={this.props.editorState}
+            editorState={this.state.editorState}
             onChange={this.onChange}
             handleKeyCommand={this.handleKeyCommand}
             handleReturn={this.handleReturn}
@@ -358,8 +353,7 @@ const mapStateToProps = (state) => {
   return {
     index: state.optionIndex,
     backspaceCount: state.backspaceCount,
-    editorState: state.editorState.editorState,
-    debugIndex: state.debugIndex,
+    editorState: state.editorState,
   };
 };
 
@@ -367,6 +361,4 @@ export default connect(mapStateToProps, {
   updateOptionIndex,
   updateBackspaceCount,
   updateEditorState,
-  changeBlockType,
-  updateDebugIndex,
 })(EditorMain);
