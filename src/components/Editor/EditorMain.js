@@ -4,7 +4,6 @@ import {
   RichUtils,
   getDefaultKeyBinding,
   Modifier,
-  ContentState,
 } from 'draft-js';
 import { getSelectedBlock, getSelectedBlocksType } from 'draftjs-utils';
 import '../../css/EditorStyle.css';
@@ -114,7 +113,10 @@ class EditorMain extends React.Component {
         const currentIndex = _.findIndex(blockTypes, {
           value: getSelectedBlocksType(this.props.editorState),
         });
-        this.props.updateOptionIndex(currentIndex);
+        if (currentIndex !== -1) {
+          this.props.updateOptionIndex(currentIndex);
+        }
+
         break;
     }
   }
