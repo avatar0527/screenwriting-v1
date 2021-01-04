@@ -12,14 +12,17 @@ class EditorInstructions extends React.Component {
           <br />
           <br />
           현재 5가지의 텍스트 포멧이 설정돼 있습니다:
-          <ul>
-            <li>씬</li>
-            <li>액션</li>
-            <li>캐릭터</li>
-            <li>대사</li>
-            <li>트렌지션</li>
-          </ul>
-          <br />이 포멧들은 <span className='ui label'>Tab</span>과{' '}
+        </p>
+        <ul>
+          <li>씬</li>
+          <li>액션</li>
+          <li>캐릭터</li>
+          <li>대사</li>
+          <li>트렌지션</li>
+        </ul>
+        <br />
+        <p style={{ fontSize: '12pt' }}>
+          이 포멧들은 <span className='ui label'>Tab</span>과{' '}
           <span className='ui label'>Tab + Shift</span> 을 통해 선택할 수
           있습니다.
         </p>

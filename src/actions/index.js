@@ -31,3 +31,9 @@ export const changeBlockType = (editorState, blockType) => {
     payload: { editorState, blockType },
   };
 };
+export const moreContentRetrieved = (editorState, blocks) => {
+  return {
+    type: 'MORE_CONTENT_RETRIEVED',
+    payload: { editorState, blocks },
+  };
+};

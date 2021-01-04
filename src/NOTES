@@ -19,7 +19,8 @@ character
 
 problem
 - when changing to and from action and scene, cursor is going up and down 
-
+- tabbing with text already there
+- go down far enough it should divide into pages
 
 - Backspace Functions 
 when backspacing, index should change to index of block type it is currently on. 
@@ -39,7 +40,7 @@ scene numbering: turn header 1 into ordered list?
 
 
 
-- use redux to manage optionIndex, editorState, editorContent(for JSON database)
+- use redux to manage editorContent(for JSON database)
 - once editorState is made into a redux thing, we can replace all the set states for action creators. 
 
 - can't backspace when i actually want to
@@ -50,6 +51,13 @@ It's good that it isn't deleting the heading, but backspace should send me to pr
 git add . 
 git commit -m "" 
 git push origin master
+
+
+
+
+
+
+
 
 
 

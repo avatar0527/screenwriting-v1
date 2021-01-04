@@ -4,8 +4,9 @@ import {
   RichUtils,
   getDefaultKeyBinding,
   Modifier,
+  ContentState,
 } from 'draft-js';
-import { getSelectedBlock } from 'draftjs-utils';
+import { getSelectedBlock, getSelectedBlocksType } from 'draftjs-utils';
 import '../../css/EditorStyle.css';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -15,7 +16,9 @@ import {
   updateEditorState,
   changeBlockType,
   updateDebugIndex,
+  moreContentRetrieved,
 } from '../../actions';
+import _ from 'lodash';
 
 import CreateSimpleButtons from './CreateSimpleButtons';
 import EditorToolbar from './EditorToolbar';
@@ -91,17 +94,33 @@ class EditorMain extends React.Component {
 
   //Debug Indexes
   // 1 = return, 2 = backspace
+  componentDidUpdate() {
+    switch (this.props.debugIndex) {
+      case 1:
+        this.props.changeBlockType(
+          this.props.editorState,
+          blockTypes[this.props.index].value
+        );
+        this.props.updateDebugIndex(0);
+        break;
+      case 2:
+        this.props.changeBlockType(
+          this.props.editorState,
+          blockTypes[this.props.index].value
+        );
+        this.props.updateDebugIndex(0);
+        break;
+      default:
+        const currentIndex = _.findIndex(blockTypes, {
+          value: getSelectedBlocksType(this.props.editorState),
+        });
+        this.props.updateOptionIndex(currentIndex);
+        break;
+    }
+  }
   onChange(editorState) {
     this.props.updateEditorState(editorState);
 
-    switch (this.props.debugIndex) {
-      case 1:
-        break;
-      case 2:
-        break;
-      default:
-        break;
-    }
     this.props.updateDebugIndex(0);
   }
 
@@ -245,19 +264,22 @@ class EditorMain extends React.Component {
       if (block.getText() === '') {
         this.clear();
 
-        if (this.props.index === 1) {
-          return 'not-handled';
-        }
+        switch (this.props.index) {
+          case 1:
+            return 'not-handled';
+          case 3:
+            return 'not-handled';
+          default:
+            this.props.updateOptionIndex(1);
 
-        this.props.updateOptionIndex(1);
+            break;
+        }
 
         editorState = RichUtils.toggleBlockType(
           this.props.editorState,
           blockTypes[this.props.index].value
         );
-        this.props.updateDebugIndex(2);
         return 'handled';
-      } else {
       }
     }
 
@@ -377,4 +399,5 @@ export default connect(mapStateToProps, {
   updateEditorState,
   changeBlockType,
   updateDebugIndex,
+  moreContentRetrieved,
 })(EditorMain);

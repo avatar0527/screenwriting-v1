@@ -31,7 +31,7 @@
 
 div.DraftEditor-root {
   background-color: white;
-  height: 297mm;
+  min-height: 297mm;
   width: 210mm;
   overflow-y: auto;
   box-sizing: border-box;
