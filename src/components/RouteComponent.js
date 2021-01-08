@@ -1,7 +1,6 @@
 import React from 'react';
 import { Router, Route } from 'react-router-dom';
 
-import EditorMain from './Editor/EditorMain';
 import EditorAuth from './Editor/EditorAuth';
 import Header from './Header';
 import createBrowserHistory from '../history';
