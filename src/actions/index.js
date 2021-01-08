@@ -2,6 +2,22 @@ import screenplays from '../apis/screenplays';
 import history from '../history';
 import { EditorState, convertToRaw } from 'draft-js';
 
+export const signIn = (userId) => {
+  return {
+    type: 'SIGN_IN',
+    payload: userId,
+  };
+};
+export const signOut = () => {
+  return {
+    type: 'SIGN_OUT',
+  };
+};
+
+export const clearEditorState = () => {
+  return { type: 'CLEAR_EDITOR_STATE' };
+};
+
 export const updateEditorState = (editorState) => {
   return {
     type: 'UPDATE_EDITOR_STATE',
@@ -49,12 +65,13 @@ export const saved = () => {
 };
 
 export const createScreenplay = (formValues) => async (dispatch, getState) => {
-  // const { userId } = getState().auth;
+  const { userId } = getState().auth;
   const newEditor = EditorState.createEmpty();
   const rawEditor = JSON.stringify(convertToRaw(newEditor.getCurrentContent()));
   const response = await screenplays.post('/screenplays', {
     ...formValues,
     rawEditor,
+    userId,
   });
 
   dispatch({ type: 'CREATE_SCREENPLAY', payload: response.data });
@@ -82,13 +99,11 @@ export const fetchScreenplay = (id) => async (dispatch) => {
 
 export const loadEditorState = (id) => async (dispatch) => {
   const response = await screenplays.get(`/screenplays/${id}`);
-  console.log(response);
 
   dispatch({ type: 'LOAD_EDITOR_STATE', payload: response.data });
 };
 
 export const saveScreenplay = (currentEditor, id) => async (dispatch) => {
-  console.log(currentEditor);
   const convertedEditor = convertToRaw(currentEditor.getCurrentContent());
   const rawEditor = JSON.stringify(convertedEditor);
   const please = { rawEditor: rawEditor };

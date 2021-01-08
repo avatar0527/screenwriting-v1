@@ -1,46 +1,52 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { fetchScreenplays } from '../actions';
+import { fetchScreenplays, clearEditorState } from '../actions';
 import { Link } from 'react-router-dom';
 
 class ScreenplayList extends React.Component {
   componentDidMount() {
     this.props.fetchScreenplays();
+    this.props.clearEditorState();
   }
 
   renderAdmin(screenplay) {
-    // if (screenplay.userId === this.props.currentUserId) {
-    return (
-      <div className='right floated content'>
-        <Link
-          to={`/screenplays/editor/${screenplay.id}`}
-          className='ui button primary'
-        >
-          편집?
-        </Link>
-        <Link
-          to={`/screenplays/delete/${screenplay.id}`}
-          className='ui button negative'
-        >
-          삭제
-        </Link>
-      </div>
-    );
-    // }
+    //this second check is unnecessary i think?
+    if (screenplay.userId === this.props.currentUserId) {
+      return (
+        <div className='right floated content'>
+          <Link
+            to={`/screenplays/editor/${screenplay.id}`}
+            className='ui button primary'
+          >
+            편집?
+          </Link>
+          <Link
+            to={`/screenplays/delete/${screenplay.id}`}
+            className='ui button negative'
+          >
+            삭제
+          </Link>
+        </div>
+      );
+    }
   }
 
   renderList() {
     return this.props.screenplays.map((screenplay) => {
-      return (
-        <div className='item' key={screenplay.id}>
-          {this.renderAdmin(screenplay)}
-          <i className='large middle aligned icon camera' />
-          <div className='content'>
-            {screenplay.title}
-            <div className='name'>{screenplay.name}</div>
+      if (screenplay.userId === this.props.currentUserId) {
+        return (
+          <div className='item' key={screenplay.id}>
+            {this.renderAdmin(screenplay)}
+            <i className='large middle aligned icon camera' />
+            <div className='content'>
+              {screenplay.title}
+              <div className='name'>{screenplay.name}</div>
+            </div>
           </div>
-        </div>
-      );
+        );
+      } else {
+        return null;
+      }
     });
   }
 
@@ -70,8 +76,10 @@ class ScreenplayList extends React.Component {
 const mapStateToProps = (state) => {
   return {
     screenplays: Object.values(state.screenplays),
-    // currentUserId: state.auth.userId,
+    currentUserId: state.auth.userId,
     isSignedIn: true,
   };
 };
-export default connect(mapStateToProps, { fetchScreenplays })(ScreenplayList);
+export default connect(mapStateToProps, { fetchScreenplays, clearEditorState })(
+  ScreenplayList
+);

@@ -2,6 +2,7 @@ import React from 'react';
 import { Router, Route } from 'react-router-dom';
 
 import EditorMain from './Editor/EditorMain';
+import EditorAuth from './Editor/EditorAuth';
 import Header from './Header';
 import createBrowserHistory from '../history';
 import ScreenplayList from './ScreenplayList';
@@ -16,7 +17,7 @@ const RouteComponent = () => {
           <Header />
           <Route path='/' exact component={ScreenplayList} />
           <Route path='/screenplays/new' exact component={ScreenplayCreate} />
-          <Route path='/screenplays/editor/:id' exact component={EditorMain} />
+          <Route path='/screenplays/editor/:id' exact component={EditorAuth} />
           <Route
             path='/screenplays/delete/:id'
             exact

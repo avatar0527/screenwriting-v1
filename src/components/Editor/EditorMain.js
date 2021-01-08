@@ -41,10 +41,10 @@ class EditorMain extends React.Component {
     this.clear = this.clear.bind(this);
     this.setDomEditorRef = (ref) => (this.domEditor = ref);
     this.focus = () => this.domEditor.focus();
+    this.props.loadEditorState(this.props.match.params.id);
   }
 
   componentDidMount() {
-    this.props.loadEditorState(this.props.match.params.id);
     this.props.updateEditorState(
       RichUtils.toggleBlockType(this.props.editorState, blockTypes[2].value)
     );

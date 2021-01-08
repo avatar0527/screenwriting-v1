@@ -6,6 +6,8 @@ const defaultState = {
 
 const editorStateReducer = (editorState = defaultState, action) => {
   switch (action.type) {
+    case 'CLEAR_EDITOR_STATE':
+      return { editorState: EditorState.createEmpty() };
     case 'UPDATE_EDITOR_STATE':
       return { ...editorState, editorState: action.payload };
 
@@ -57,11 +59,6 @@ const editorStateReducer = (editorState = defaultState, action) => {
       const parsedEditor = JSON.parse(rawEditor);
       const convertedEditor = convertFromRaw(parsedEditor);
       const loadedEditor = EditorState.createWithContent(convertedEditor);
-      console.log(action.payload);
-      console.log(rawEditor);
-      console.log(parsedEditor);
-      console.log(convertedEditor);
-      console.log(loadedEditor);
       return { editorState: loadedEditor };
 
     default:
