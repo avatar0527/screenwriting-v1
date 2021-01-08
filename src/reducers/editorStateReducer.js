@@ -50,6 +50,19 @@ const editorStateReducer = (editorState = defaultState, action) => {
 
       // Return combined selection state
       return newStateWithSelection;
+    case 'LOAD_EDITOR_STATE':
+      // const testEditor = EditorState.
+
+      const rawEditor = action.payload.rawEditor;
+      const parsedEditor = JSON.parse(rawEditor);
+      const convertedEditor = convertFromRaw(parsedEditor);
+      const loadedEditor = EditorState.createWithContent(convertedEditor);
+      console.log(action.payload);
+      console.log(rawEditor);
+      console.log(parsedEditor);
+      console.log(convertedEditor);
+      console.log(loadedEditor);
+      return { editorState: loadedEditor };
 
     default:
       return editorState;

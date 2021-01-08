@@ -1,5 +1,6 @@
 import React from 'react';
 import { getSelectionInlineStyle } from 'draftjs-utils';
+import { connect } from 'react-redux';
 
 const CreateSimpleButtons = ({
   buttonDetails,
@@ -43,4 +44,10 @@ const CreateSimpleButtons = ({
   return <div className='ui buttons'>{renderButtons()}</div>;
 };
 
-export default CreateSimpleButtons;
+const mapStateToProps = (state) => {
+  return {
+    editorState: state.editorState.editorState,
+  };
+};
+
+export default connect(mapStateToProps)(CreateSimpleButtons);

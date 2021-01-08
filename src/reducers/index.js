@@ -1,12 +1,16 @@
 import { combineReducers } from 'redux';
-import backspaceCountReducer from './backspaceCountReducer';
+import { reducer as formReducer } from 'redux-form';
 import optionIndexReducer from './optionIndexReducer';
 import editorStateReducer from './editorStateReducer';
 import debugIndexReducer from './debugIndexReducer';
+import screenplaysReducer from './screenplaysReducer';
+import saveStatusReducer from './saveStatusReducer';
 
 export default combineReducers({
   optionIndex: optionIndexReducer,
-  backspaceCount: backspaceCountReducer,
   editorState: editorStateReducer,
   debugIndex: debugIndexReducer,
+  screenplays: screenplaysReducer,
+  form: formReducer,
+  saveStatus: saveStatusReducer,
 });

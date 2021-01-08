@@ -4,10 +4,13 @@ class EditorHeader extends React.Component {
   render() {
     return (
       <div className='ui grid'>
-        <h2 className='ui header' style={{ margin: '0px' }}>
+        <h3
+          className='ui header'
+          style={{ marginTop: 'auto', marginBottom: 'auto' }}
+        >
           {/* <i className='file icon' /> */}
-          Screen Writing 1
-        </h2>
+          Screenplay Title
+        </h3>
         <div className='sub header'>
           <div className='ui secondary menu'>
             <a href='/' className='item '>

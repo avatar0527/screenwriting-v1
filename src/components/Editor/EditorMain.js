@@ -4,75 +4,36 @@ import {
   RichUtils,
   getDefaultKeyBinding,
   Modifier,
+  KeyBindingUtil,
 } from 'draft-js';
 import { getSelectedBlock, getSelectedBlocksType } from 'draftjs-utils';
 import '../../css/EditorStyle.css';
 import React from 'react';
 import { connect } from 'react-redux';
 import {
-  updateBackspaceCount,
   updateOptionIndex,
   updateEditorState,
   changeBlockType,
   updateDebugIndex,
   moreContentRetrieved,
+  loadEditorState,
+  notSaved,
+  saved,
+  saveScreenplay,
 } from '../../actions';
 import _ from 'lodash';
 
-import CreateSimpleButtons from './CreateSimpleButtons';
 import EditorToolbar from './EditorToolbar';
-import BlockButtons from './BlockButtons';
-import EditorDropdown from './EditorDropdown';
 import EditorHeader from './EditorHeader';
 import EditorInstructions from './EditorInstructions';
-
-const blockTypes = [
-  {
-    value: 'header-one',
-    buttonText: '씬',
-  },
-
-  {
-    value: 'unstyled',
-    buttonText: '액션',
-  },
-
-  {
-    value: 'header-three',
-    buttonText: '캐릭터',
-  },
-  {
-    value: 'header-four',
-    buttonText: '대사',
-  },
-  {
-    value: 'header-five',
-    buttonText: '트렌지션',
-  },
-];
-
-const fontWeightButtons = [
-  {
-    value: 'BOLD',
-    buttonIcon: 'bold icon',
-    buttonText: '',
-  },
-  {
-    value: 'UNDERLINE',
-    buttonIcon: 'underline icon',
-    buttonText: '',
-  },
-  {
-    value: 'ITALIC',
-    buttonIcon: 'italic icon',
-    buttonText: '',
-  },
-];
+import { blockTypes } from './blockTypes';
 
 class EditorMain extends React.Component {
   constructor(props) {
     super(props);
 
+    this.ref = React.createRef();
+    this.state = { editorRef: this.ref };
     this.onChange = this.onChange.bind(this);
     this.handleReturn = this.handleReturn.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
@@ -83,12 +44,15 @@ class EditorMain extends React.Component {
   }
 
   componentDidMount() {
+    this.props.loadEditorState(this.props.match.params.id);
     this.props.updateEditorState(
-      RichUtils.toggleBlockType(
-        this.props.editorState,
-        blockTypes[this.props.index].value
-      )
+      RichUtils.toggleBlockType(this.props.editorState, blockTypes[2].value)
     );
+    var el = this.state.editorRef.current;
+    el.addEventListener('compositionstart', this.handler);
+    return () => {
+      el.removeEventListener('compositionstart', this.handler);
+    };
   }
 
   //Debug Indexes
@@ -120,11 +84,40 @@ class EditorMain extends React.Component {
         break;
     }
   }
-  onChange(editorState) {
-    this.props.updateEditorState(editorState);
+  dispatchEditorState = () => {
+    const prevEditorState = this.props.editorState;
+    try {
+      const selection = prevEditorState.getSelection();
+      const contentState = prevEditorState.getCurrentContent();
+      // 将选中文字部分置空
+      const nextContentState = Modifier.replaceText(
+        contentState,
+        selection,
+        '',
+        undefined
+      );
+      const pushCommand = EditorState.push(
+        prevEditorState,
+        nextContentState,
+        'insert-characters'
+      );
+      this.props.updateEditorState(pushCommand);
+    } catch (e) {
+      console.error(e);
+      this.props.updateEditorState(prevEditorState);
+    }
+  };
 
-    this.props.updateDebugIndex(0);
+  onChange(editorState) {
+    if (this.props.saveStatus === 0) {
+      this.props.notSaved();
+    }
+    this.props.updateEditorState(editorState);
   }
+
+  handler = () => {
+    this.dispatchEditorState();
+  };
 
   keyBindingFunction(e) {
     //will need something to say cursor on most left end for tab stuff
@@ -136,6 +129,10 @@ class EditorMain extends React.Component {
     if (e.keyCode === 9) {
       e.preventDefault();
       return 'upOneLevel';
+    }
+    if (e.keyCode === 83 && KeyBindingUtil.hasCommandModifier(e)) {
+      e.preventDefault();
+      return 'saveScreenplay';
     }
 
     return getDefaultKeyBinding(e);
@@ -179,6 +176,26 @@ class EditorMain extends React.Component {
     this.props.updateEditorState(EditorState.push(editorState, removeBlock));
   }
 
+  work(editorState) {
+    const currentContent = editorState.getCurrentContent(),
+      currentSelection = editorState.getSelection();
+
+    const newContent = Modifier.insertText(
+      currentContent,
+      currentSelection,
+      'characterToInsert'
+    );
+
+    const newEditorState = EditorState.push(
+      editorState,
+      newContent,
+      'insert-characters'
+    );
+
+    this.onChange(newEditorState);
+    this.focus();
+  }
+
   handleReturn(event, editorState) {
     const block = getSelectedBlock(this.props.editorState);
     const currentContent = editorState.getCurrentContent();
@@ -195,6 +212,7 @@ class EditorMain extends React.Component {
 
           return 'handled';
         default:
+          this.props.updateOptionIndex(1);
           return 'not-handled';
       }
 
@@ -213,6 +231,9 @@ class EditorMain extends React.Component {
           break;
         case 3:
           i = 2;
+          break;
+        case 4:
+          i = 0;
           break;
         default:
           break;
@@ -284,6 +305,15 @@ class EditorMain extends React.Component {
         return 'handled';
       }
     }
+    if (command === 'saveScreenplay') {
+      this.props.saveScreenplay(
+        this.props.editorState,
+        this.props.match.params.id
+      );
+      this.props.saved();
+
+      return 'handled';
+    }
 
     if (editorState) {
       this.props.updateEditorState(editorState);
@@ -302,71 +332,15 @@ class EditorMain extends React.Component {
     );
   }
 
-  blockTypeOnSelectedChange = (index) => {
-    this.props.updateOptionIndex(index);
-    this.props.updateEditorState(
-      RichUtils.toggleBlockType(this.props.editorState, blockTypes[index].value)
-    );
-  };
-
-  toggleFontWeight = (e) => {
-    //check if already applied
-    // if not, apply
-    e.preventDefault();
-
-    const value = e.currentTarget.getAttribute('data-style');
-    this.setState({
-      editorState: RichUtils.toggleInlineStyle(this.props.editorState, value),
-    });
-  };
-
   render() {
     return (
       <div className='ui container' style={{ marginTop: '3em' }}>
-        <div>
-          <EditorHeader />
-          <EditorToolbar
-            blockDropdown={
-              <EditorDropdown
-                options={blockTypes}
-                selected={this.props.index}
-                onSelectedChange={this.blockTypeOnSelectedChange}
-                label=''
-              />
-            }
-            fontButtons={
-              <CreateSimpleButtons
-                buttonDetails={fontWeightButtons}
-                buttonFunction={this.toggleFontWeight}
-                editorState={this.props.editorState}
-              />
-            }
-            sceneNumberButton={
-              <CreateSimpleButtons
-                buttonDetails={[
-                  {
-                    value: 'placeholder',
-                    buttonIcon: 'list ol icon',
-                    buttonText: '',
-                  },
-                ]}
-                buttonFunction={() => {
-                  return null;
-                }}
-                editorState={this.props.editorState}
-              />
-            }
-            blockButtons={
-              <BlockButtons
-                editorState={this.props.editorState}
-                toggleBlockType={this.toggleBlockType}
-                blockTypes={blockTypes}
-              />
-            }
-          />
-        </div>
         <div className='ui compact segment'>
-          <div onClick={this.focus}>
+          <div>
+            <EditorHeader />
+            <EditorToolbar {...this.props} />
+          </div>
+          <div onClick={this.focus} ref={this.ref}>
             <Editor
               editorState={this.props.editorState}
               onChange={this.onChange}
@@ -392,14 +366,18 @@ const mapStateToProps = (state) => {
     backspaceCount: state.backspaceCount,
     editorState: state.editorState.editorState,
     debugIndex: state.debugIndex,
+    saveStatus: state.saveStatus,
   };
 };
 
 export default connect(mapStateToProps, {
   updateOptionIndex,
-  updateBackspaceCount,
   updateEditorState,
   changeBlockType,
   updateDebugIndex,
   moreContentRetrieved,
+  loadEditorState,
+  notSaved,
+  saved,
+  saveScreenplay,
 })(EditorMain);

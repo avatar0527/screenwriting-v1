@@ -32,6 +32,9 @@ class EditorInstructions extends React.Component {
           그냥 피드백이 있다면 언제든지 환영입니다!
         </p>
         <FeedbackForm />
+        <br />
+        <br />
+        <p>* 현재 한글 입력시 버그들 잇음 ㅜ</p>
       </div>
     );
   }
