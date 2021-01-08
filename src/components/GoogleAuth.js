@@ -50,7 +50,7 @@ class GoogleAuth extends React.Component {
       return (
         <button onClick={this.onSignInClick} className='ui green google button'>
           <i className='google icon' />
-          Sign In with Google
+          구글 로그인
         </button>
       );
     }
