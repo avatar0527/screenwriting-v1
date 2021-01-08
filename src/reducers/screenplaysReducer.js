@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export default (state = {}, action) => {
+const screenplaysReducer = (state = {}, action) => {
   switch (action.type) {
     case 'FETCH_SCREENPLAYS':
       return { ...state, ..._.mapKeys(action.payload, 'id') };
@@ -16,3 +16,5 @@ export default (state = {}, action) => {
       return state;
   }
 };
+
+export default screenplaysReducer;

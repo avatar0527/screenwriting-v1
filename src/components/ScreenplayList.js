@@ -1,5 +1,4 @@
 import React from 'react';
-import history from '../history';
 import { connect } from 'react-redux';
 import { fetchScreenplays } from '../actions';
 import { Link } from 'react-router-dom';
