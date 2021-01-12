@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <div className='ui secondary pointing menu'>
       <Link to='/' className='item'>
-        Screenwriter 0.1.1
+        Screenwriter 0.1.2
       </Link>
       <div className='right menu'>
         <Link to='/' className='item'>

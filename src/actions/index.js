@@ -110,3 +110,10 @@ export const saveScreenplay = (currentEditor, id) => async (dispatch) => {
   const response = await screenplays.patch(`/screenplays/${id}`, please); //might need to be patch? not sure.
   dispatch({ type: 'SAVE_SCREENPLAY', payload: response.data });
 };
+
+export const updateFormat = (updatedFormat, id) => async (dispatch) => {
+  const patchFormat = { format: updatedFormat };
+  const response = await screenplays.patch(`/screenplays/${id}`, patchFormat);
+
+  dispatch({ type: 'UPDATE_FORMAT', payload: response.data });
+};

@@ -17,7 +17,6 @@ class EditorAuth extends React.Component {
         </div>
       );
     } else {
-      console.log(screenplay);
       if (screenplay.userId === this.props.currentUserId) {
         return <EditorMain match={this.props.match} />;
       } else {

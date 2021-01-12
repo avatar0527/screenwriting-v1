@@ -75,7 +75,7 @@ const EditorToolbar = (props) => {
       <div className='ui divider' style={{ margin: '1rem 0 0.25rem' }}></div>
       <div className='ui horizontal divided list'>
         <div className='item' style={{ fontWeight: 'bold' }}>
-          Hollywood Standard
+          {props.format}
         </div>
         <div className='item'>
           <EditorDropdown
@@ -105,6 +105,7 @@ const mapStateToProps = (state) => {
   return {
     optionIndex: state.optionIndex,
     editorState: state.editorState.editorState,
+    format: state.format,
   };
 };
 

@@ -40,11 +40,10 @@ if (empty)
 
     }
 
+create new state for Formats
+create new formats array 
 
-
-scene numbering: turn header 1 into ordered list? 
-
-
+make sure when format is set, screenplay store + json is also updated 
 
 - use redux to manage editorContent(for JSON database)
 - once editorState is made into a redux thing, we can replace all the set states for action creators. 

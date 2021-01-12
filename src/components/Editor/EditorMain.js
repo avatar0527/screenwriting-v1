@@ -20,6 +20,7 @@ import {
   notSaved,
   saved,
   saveScreenplay,
+  updateFormat,
 } from '../../actions';
 import _ from 'lodash';
 
@@ -37,11 +38,17 @@ class EditorMain extends React.Component {
     this.onChange = this.onChange.bind(this);
     this.handleReturn = this.handleReturn.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
+    this.myBlockStyleFn = this.myBlockStyleFn.bind(this);
     this.toggleBlockType = this.toggleBlockType.bind(this);
     this.clear = this.clear.bind(this);
     this.setDomEditorRef = (ref) => (this.domEditor = ref);
     this.focus = () => this.domEditor.focus();
+    this.props.updateFormat(
+      this.props.screenplay.format,
+      this.props.match.params.id
+    );
     this.props.loadEditorState(this.props.match.params.id);
+    console.log(this.props.format);
   }
 
   componentDidMount() {
@@ -84,29 +91,6 @@ class EditorMain extends React.Component {
         break;
     }
   }
-  dispatchEditorState = () => {
-    const prevEditorState = this.props.editorState;
-    try {
-      const selection = prevEditorState.getSelection();
-      const contentState = prevEditorState.getCurrentContent();
-      // 将选中文字部分置空
-      const nextContentState = Modifier.replaceText(
-        contentState,
-        selection,
-        '',
-        undefined
-      );
-      const pushCommand = EditorState.push(
-        prevEditorState,
-        nextContentState,
-        'insert-characters'
-      );
-      this.props.updateEditorState(pushCommand);
-    } catch (e) {
-      console.error(e);
-      this.props.updateEditorState(prevEditorState);
-    }
-  };
 
   onChange(editorState) {
     if (this.props.saveStatus === 0) {
@@ -114,10 +98,6 @@ class EditorMain extends React.Component {
     }
     this.props.updateEditorState(editorState);
   }
-
-  handler = () => {
-    this.dispatchEditorState();
-  };
 
   keyBindingFunction(e) {
     //will need something to say cursor on most left end for tab stuff
@@ -141,40 +121,49 @@ class EditorMain extends React.Component {
   myBlockStyleFn(contentBlock) {
     const type = contentBlock.getType();
     if (type === 'header-one') {
-      return 'scene';
+      return `${this.props.format} scene`;
     }
     if (type === 'unstyled') {
-      return 'action';
+      return `${this.props.format} action`;
     }
     if (type === 'header-three') {
-      return 'character';
+      return `${this.props.format} character`;
     }
     if (type === 'header-four') {
-      return 'dialogue';
+      return `${this.props.format} dialogue`;
     }
     if (type === 'header-five') {
-      return 'transition';
+      return `${this.props.format} transition`;
     }
   }
 
-  clear() {
-    const editorState = this.props.editorState;
-    const selection = editorState.getSelection();
-    const contentState = editorState.getCurrentContent();
-    const styles = editorState.getCurrentInlineStyle();
+  handler = () => {
+    this.dispatchEditorState();
+  };
 
-    const removeStyles = styles.reduce((state, style) => {
-      return Modifier.removeInlineStyle(state, selection, style);
-    }, contentState);
+  dispatchEditorState = () => {
+    const prevEditorState = this.props.editorState;
+    try {
+      const selection = prevEditorState.getSelection();
+      const contentState = prevEditorState.getCurrentContent();
 
-    const removeBlock = Modifier.setBlockType(
-      removeStyles,
-      selection,
-      'unstyled'
-    );
-
-    this.props.updateEditorState(EditorState.push(editorState, removeBlock));
-  }
+      const nextContentState = Modifier.replaceText(
+        contentState,
+        selection,
+        '',
+        undefined
+      );
+      const pushCommand = EditorState.push(
+        prevEditorState,
+        nextContentState,
+        'insert-characters'
+      );
+      this.props.updateEditorState(pushCommand);
+    } catch (e) {
+      console.error(e);
+      this.props.updateEditorState(prevEditorState);
+    }
+  };
 
   work(editorState) {
     const currentContent = editorState.getCurrentContent(),
@@ -194,6 +183,25 @@ class EditorMain extends React.Component {
 
     this.onChange(newEditorState);
     this.focus();
+  }
+
+  clear() {
+    const editorState = this.props.editorState;
+    const selection = editorState.getSelection();
+    const contentState = editorState.getCurrentContent();
+    const styles = editorState.getCurrentInlineStyle();
+
+    const removeStyles = styles.reduce((state, style) => {
+      return Modifier.removeInlineStyle(state, selection, style);
+    }, contentState);
+
+    const removeBlock = Modifier.setBlockType(
+      removeStyles,
+      selection,
+      'unstyled'
+    );
+
+    this.props.updateEditorState(EditorState.push(editorState, removeBlock));
   }
 
   handleReturn(event, editorState) {
@@ -360,13 +368,15 @@ class EditorMain extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
   return {
     index: state.optionIndex,
     backspaceCount: state.backspaceCount,
     editorState: state.editorState.editorState,
     debugIndex: state.debugIndex,
     saveStatus: state.saveStatus,
+    screenplay: state.screenplays[ownProps.match.params.id],
+    format: state.format,
   };
 };
 
@@ -380,4 +390,5 @@ export default connect(mapStateToProps, {
   notSaved,
   saved,
   saveScreenplay,
+  updateFormat,
 })(EditorMain);

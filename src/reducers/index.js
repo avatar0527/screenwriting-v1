@@ -6,6 +6,7 @@ import debugIndexReducer from './debugIndexReducer';
 import screenplaysReducer from './screenplaysReducer';
 import saveStatusReducer from './saveStatusReducer';
 import authReducer from './authReducer';
+import formatReducer from './formatReducer';
 
 export default combineReducers({
   optionIndex: optionIndexReducer,
@@ -15,4 +16,5 @@ export default combineReducers({
   form: formReducer,
   saveStatus: saveStatusReducer,
   auth: authReducer,
+  format: formatReducer,
 });
