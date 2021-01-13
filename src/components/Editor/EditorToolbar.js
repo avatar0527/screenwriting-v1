@@ -1,11 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import RichUtils from 'draft-js';
+import { RichUtils } from 'draft-js';
 
 import EditorDropdown from './EditorDropdown';
 import CreateSimpleButtons from './CreateSimpleButtons';
 import SaveButton from './SaveButton';
-import { updateEditorState, updateOptionIndex } from '../../actions';
+import {
+  updateEditorState,
+  updateOptionIndex,
+  updateFormat,
+} from '../../actions';
+import formatTypes from './formatTypes';
+import FormatDropdown from './FormatDropdown';
 
 const blockTypes = [
   {
@@ -53,9 +59,11 @@ const fontWeightButtons = [
 const EditorToolbar = (props) => {
   const blockTypeOnSelectedChange = (index) => {
     props.updateOptionIndex(index);
-    props.updateEditorState(
-      RichUtils.toggleBlockType(props.editorState, blockTypes[index].value)
+    const newEditorState = RichUtils.toggleBlockType(
+      props.editorState,
+      blockTypes[index].value
     );
+    props.updateEditorState(newEditorState);
   };
 
   const toggleFontWeight = (e) => {
@@ -74,9 +82,15 @@ const EditorToolbar = (props) => {
     <div>
       <div className='ui divider' style={{ margin: '1rem 0 0.25rem' }}></div>
       <div className='ui horizontal divided list'>
-        <div className='item' style={{ fontWeight: 'bold' }}>
-          {props.format}
+        <div className='item'>
+          <FormatDropdown
+            options={formatTypes}
+            onSelectedChange={props.updateFormat}
+            label=''
+            id={props.match.params.id}
+          />
         </div>
+
         <div className='item'>
           <EditorDropdown
             options={blockTypes}
@@ -112,4 +126,5 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   updateOptionIndex,
   updateEditorState,
+  updateFormat,
 })(EditorToolbar);

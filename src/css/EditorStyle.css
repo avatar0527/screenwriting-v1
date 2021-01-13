@@ -1,20 +1,28 @@
 .hollywood.scene {
+  font-family: 'Nanum Gothic', sans-serif;
+
   text-transform: uppercase;
   background-color: rgb(192, 192, 192);
   font-size: 16px;
   font-weight: normal;
 }
 .hollywood.action {
+  font-family: 'Nanum Gothic', sans-serif;
+
   font-size: 16px;
   font-weight: normal;
 }
 .hollywood.character {
+  font-family: 'Nanum Gothic', sans-serif;
+
   font-size: 16px;
   font-weight: bold;
   text-align: center;
   margin-bottom: 0;
 }
 .hollywood.dialogue {
+  font-family: 'Nanum Gothic', sans-serif;
+
   font-size: 16px;
   text-align: justify;
   margin-left: 30%;
@@ -23,24 +31,32 @@
   font-weight: normal;
 }
 .hollywood.transition {
+  font-family: 'Nanum Gothic', sans-serif;
+
   font-size: 16px;
   text-align: right;
   font-weight: normal;
   text-transform: uppercase;
 }
 .korean.scene {
+  font-family: 'Nanum Gothic', sans-serif;
+
   text-transform: uppercase;
   background-color: rgb(192, 192, 192);
   font-size: 16px;
   font-weight: normal;
 }
 .korean.action {
+  font-family: 'Nanum Gothic', sans-serif;
+
   font-size: 16px;
   font-weight: normal;
   line-height: 1.5;
   margin-bottom: 20px;
 }
 .korean.character {
+  font-family: 'Nanum Gothic', sans-serif;
+
   font-size: 16px;
   font-weight: bold;
   text-align: left;
@@ -48,6 +64,8 @@
   margin-top: 0;
 }
 .korean.dialogue {
+  font-family: 'Nanum Gothic', sans-serif;
+
   font-size: 16px;
   text-align: left;
   margin-left: 15%;
@@ -59,6 +77,8 @@
   top: -22px;
 }
 .korean.transition {
+  font-family: 'Nanum Gothic', sans-serif;
+
   font-size: 16px;
   text-align: right;
   font-weight: normal;

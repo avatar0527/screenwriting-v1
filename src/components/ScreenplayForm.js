@@ -2,10 +2,7 @@ import React from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { Dropdown, Form } from 'semantic-ui-react';
 
-const formatTypes = [
-  { key: 'hollywood', text: 'Hollywood Standard', value: 'hollywood' },
-  { key: 'korean', text: 'Korean Standard', value: 'korean' },
-];
+import formatTypes from './Editor/formatTypes';
 
 class ScreenplayForm extends React.Component {
   DropdownFormField = (props) => (
@@ -59,7 +56,7 @@ class ScreenplayForm extends React.Component {
         <Field
           name='format'
           component={this.DropdownFormField}
-          label='포멧을 선택해주세요 '
+          label='양식을 선택해주세요 '
         />
         <button className='ui button primary'>입력</button>
       </form>
@@ -70,13 +67,13 @@ class ScreenplayForm extends React.Component {
 const validate = (formValues) => {
   const errors = {};
   if (!formValues.title) {
-    errors.title = 'Enter Title!';
+    errors.title = '제목을 입력해주세요!';
   }
   if (!formValues.name) {
-    errors.name = 'Enter Writer Name!';
+    errors.name = '작가를 입력해주세요!';
   }
   if (!formValues.format) {
-    errors.format = 'Select a Format!';
+    errors.format = '양식을 선택해주세요!';
   }
   return errors;
 };

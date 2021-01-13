@@ -48,7 +48,6 @@ class EditorMain extends React.Component {
       this.props.match.params.id
     );
     this.props.loadEditorState(this.props.match.params.id);
-    console.log(this.props.format);
   }
 
   componentDidMount() {
@@ -345,7 +344,7 @@ class EditorMain extends React.Component {
       <div className='ui container' style={{ marginTop: '3em' }}>
         <div className='ui compact segment'>
           <div>
-            <EditorHeader />
+            <EditorHeader {...this.props} />
             <EditorToolbar {...this.props} />
           </div>
           <div onClick={this.focus} ref={this.ref}>

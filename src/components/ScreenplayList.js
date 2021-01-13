@@ -37,10 +37,10 @@ class ScreenplayList extends React.Component {
         return (
           <div className='item' key={screenplay.id}>
             {this.renderAdmin(screenplay)}
-            <i className='large middle aligned icon camera' />
+            <i className='large middle aligned icon edit' />
             <div className='content'>
-              {screenplay.title}
-              <div className='name'>{screenplay.name}</div>
+              <div className='header'>{screenplay.title}</div>
+              <div className='description'>{screenplay.name}</div>
             </div>
           </div>
         );
@@ -65,7 +65,9 @@ class ScreenplayList extends React.Component {
       return (
         <div>
           <h2>시나리오</h2>
-          <div className='ui celled list'>{this.renderList()}</div>
+          <div className='ui middel aligned divided list'>
+            {this.renderList()}
+          </div>
           {this.renderCreate()}
         </div>
       );

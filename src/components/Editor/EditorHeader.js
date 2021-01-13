@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 class EditorHeader extends React.Component {
   render() {
@@ -8,8 +9,7 @@ class EditorHeader extends React.Component {
           className='ui header'
           style={{ marginTop: 'auto', marginBottom: 'auto' }}
         >
-          {/* <i className='file icon' /> */}
-          Screenplay Title
+          {this.props.screenplay.title}
         </h3>
         <div className='sub header'>
           <div className='ui secondary menu'>
@@ -38,4 +38,10 @@ class EditorHeader extends React.Component {
   }
 }
 
-export default EditorHeader;
+const mapStateToProps = (state, ownProps) => {
+  return {
+    screenplay: state.screenplays[ownProps.match.params.id],
+  };
+};
+
+export default connect(mapStateToProps)(EditorHeader);

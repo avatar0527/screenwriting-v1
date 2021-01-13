@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import EditorMain from './EditorMain';
-import { fetchScreenplay } from '../../actions';
+import { fetchScreenplay, updateFormat } from '../../actions';
 
 class EditorAuth extends React.Component {
   componentDidMount() {
@@ -44,4 +44,6 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { fetchScreenplay })(EditorAuth);
+export default connect(mapStateToProps, { fetchScreenplay, updateFormat })(
+  EditorAuth
+);

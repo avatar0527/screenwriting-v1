@@ -1,52 +1,25 @@
 GOAL FOR THE WEEK
 - Toggle Different Screenplay Formats
-- SET NEW Goals FOR THE WEEK!
+- Find a way to index scenes 
+- Restyle Lists page (should display format name as well)
+- list page click on name to go to the thing 
 - START WORKING ON BUSINESS SIDE 
 
 
-01/01 Goals
-- Enter Functions
-General
-Scene 
-- after typing scene, press enter to go down a line AND change to action 
-- If scene and empty, change to action 
+Problems 
+- Fix formatting problems with Korean Standard 
+- Dropdown bugs out when clicking option 
+- When editor loads, it loads with hollywood as default until user clicks on editor 
+- Translate all to Korean
+- googleauth load of undefined 
 
-action
-- if empty, change to scene
 
-Character 
-- if empty press enter to go back to action 
-- if not, go down a line and change to dialogue
 
-dialogue
-- if empty ??
-- if not empty, go down a line and change to 
-character 
-
-problem
-- when changing to and from action and scene, cursor is going up and down 
-- tabbing with text already there
-- go down far enough it should divide into pages
-
-- Backspace Functions 
-when backspacing, index should change to index of block type it is currently on. 
-
-if (empty)
-    if (action) {
-        updateIndex to line above
-        do normal thing 
-    }
-    if(!action) {
-
-    }
 
 create new state for Formats
 create new formats array 
 
 make sure when format is set, screenplay store + json is also updated 
-
-- use redux to manage editorContent(for JSON database)
-- once editorState is made into a redux thing, we can replace all the set states for action creators. 
 
 - can't backspace when i actually want to
 It's good that it isn't deleting the heading, but backspace should send me to previous line 

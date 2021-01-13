@@ -34,7 +34,11 @@ class EditorInstructions extends React.Component {
         <FeedbackForm />
         <br />
         <br />
-        <p>* 현재 한글 입력시 버그들 잇음 ㅜ</p>
+        <h4>* 현재 한글 입력시 버그들 잇음 ㅜ *</h4>
+        <p style={{ fontSize: '12pt' }}>
+          한글로 캐릭터 혹은 대사 입력시 엔터 누르기 전에 스페이스 한번 누르면
+          문제는 없음
+        </p>
       </div>
     );
   }
